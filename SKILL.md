@@ -1,6 +1,6 @@
 ---
 name: source-trail
-version: 1.4.0
+version: 1.5.0
 description: Use when answering factual questions involving specific numbers, dates, comparative claims (most/best/first), current states ("now", "latest", "still"), attribution (who/when/where), or any information that may have changed since training. SKIP for code logic, concept explanations, opinions, hypotheticals, creative tasks.
 license: MIT
 ---
@@ -521,6 +521,86 @@ Phase 5 turns the falsifiability statement into an investigation.
 
 This is more proactive than Phase 4 — it doesn't wait for an external reviewer.
 
+### Phase 6: Belief Source-Trail（信念溯源）— conditional
+
+**The complement to fact source-tracing.** Phases 0–5 verify *what the fact is*. Phase 6 explains *why a different, incorrect belief became plausible enough to spread* — without dismissing the believer.
+
+#### Why Phase 6 exists
+
+A factually correct verification that ignores why the false belief took root reads as condescension. Readers naturally respond: "If you're right, why does everyone else believe the wrong thing — are they all stupid?"
+
+The answer is almost always no. False beliefs spread because **structural conditions** — knowledge gaps, narrative frames, media language, group identity, cognitive load — make the incorrect interpretation the *natural near-guess* under the listener's actual information environment.
+
+**Believing the wrong thing is often rational given the conditions; correcting it requires first acknowledging those conditions.** Phase 6 puts the same rigor on belief formation that Phases 0–5 put on fact formation. The user phrased the principle as: *「人們的情緒跟焦慮是真實的，要先被同理，才能夠看得下溯源的證據」*— emotions and anxieties are real; they must be empathized with before someone is ready to read the source trail.
+
+#### Run when
+
+- The false-belief version of the question circulates on social media with measurable reach
+- The conclusion is going to be **published** (case file, post, public output) — readers will need this context to absorb the verification rather than reject it
+- High-stakes questions where simply asserting the truth has historically failed to shift belief
+- The verified conclusion contradicts a politically or emotionally invested framing
+
+#### Skip when
+
+- Low-stakes lookup with no false-belief alternative in circulation
+- Pure technical / scientific questions with no social dimension
+- The verification is being delivered to a single audience already aligned with the conclusion
+
+#### Execution — required written artifact
+
+Produce a **Structural Factor Analysis** table. The table must satisfy these constraints:
+
+1. **At least 3 factors.** Single-factor explanations are reductive and almost always wrong.
+2. **At least 2 distinct factor categories** from this list:
+   - **Cognitive** — knowledge gaps, memory conflation, attribute substitution, default heuristics
+   - **Political** — pre-existing narrative frames, identity-based attribution, partisan priors
+   - **Media** — headline ambiguity, wire copy propagation, framing language
+   - **Propagation** — what's shareable on a given platform, attention economy, simplification pressure
+   - **Psychological** — emotional resonance, in-group/out-group dynamics, anxiety amplification
+3. **Empathy frame required:** explicitly state in one sentence the reading under which believing the false version was a *rational near-guess* given the conditions. If no such reading exists, the false belief is malicious rather than structural, and Phase 6 should output that finding directly.
+4. **No single-attribution verdicts.** Do not say "people believe this because they are [political tribe]." That collapses Phase 6 into political commentary.
+
+##### Format
+
+```
+為什麼這個誤解會流傳：結構性因素分析
+
+| 因素 | 性質 | 對本案的作用 |
+|---|---|---|
+| A. [factor name] | [category] | [one-sentence mechanism] |
+| B. ... | ... | ... |
+| C. ... | ... | ... |
+| ...至少 3 項，至少 2 個 category | | |
+
+同理框架：在這些條件聚合下，相信「[false belief verbatim]」是一種理性的近似猜測，而非愚蠢或惡意。
+```
+
+#### Anti-patterns
+
+- **Single-cause reduction:** "People believe X because of media bias / political bias / education." Real social phenomena are multi-factorial.
+- **Veiled contempt:** "People can't tell the difference between special budget and county budget." Rephrase as a structural condition, not a personal deficit.
+- **Both-sidesing as an escape:** Phase 6 is structural analysis, not a "both sides have a point" hedge. Be specific about which conditions are doing the work.
+- **Politicizing the analysis:** If the structural factors mostly favor one political reading, the analyst is bringing their own framing. Stress-test by trying to write the same factors with the political valence reversed.
+
+#### Disclosure surfacing
+
+When Phase 6 runs, the structural factor analysis must appear in the published output. It is **not** internal metadata — it is the empathy layer the reader needs in order to integrate the verification rather than reject it.
+
+Place it after the factual conclusion and before the verification metadata (sources, falsifiability). The reader's progression should be:
+
+1. Conclusion (what's true)
+2. Evidence (why it's true)
+3. **Phase 6 — Belief Source-Trail** (why a different version was plausible)
+4. Verification trail (T1 sources, ACH, etc.)
+
+#### Relationship to other phases
+
+- Phase 0.3 surfaces the *false premise* in the question
+- Phase 2/5 verify *the actual facts*
+- **Phase 6 explains why the false premise itself was natural** — closing the loop between the question and the reader's prior beliefs
+
+Phase 6 is what makes Source-Trail's output not just *correct* but *receivable*.
+
 ---
 
 ## Disclosure Format Examples
@@ -667,6 +747,11 @@ Question received
    - Run if: High stakes, comparative claims, surprising conclusion
    - Skip if: Low stakes + closed answer space + strong T1 verification
        ↓
+[Phase 6] Belief Source-Trail?
+   - Run if: false-belief version circulates on social media; output will be
+     published; politically/emotionally invested framing
+   - Skip if: low-stakes lookup; no social dimension; aligned audience only
+       ↓
 Final answer
 ```
 
@@ -676,12 +761,15 @@ Final answer
 |---------------|---------------|
 | Pure factual lookup (Low stakes) | 0, 0.3, 0.5, 1?, 2, 3 |
 | Comparative / evaluative (Medium) | 0, 0.3, 0.5, 1?, 2, 3, 4 |
-| Decision support / harm if wrong (High) | All phases (0–5) |
-| News / current events | 0, **0.3 critical**, 0.5, 1?, 2, 3, +5 if politicized |
+| Decision support / harm if wrong (High) | All phases (0–6) |
+| News / current events | 0, **0.3 critical**, 0.5, 1?, 2, 3, +5 if politicized, **+6 if going public** |
 | Technical specs / docs | 0, 0.3, 0.5, 2, 3 |
-| Medical / financial / legal | All phases (0–5), no shortcuts |
+| Medical / financial / legal | All phases (0–6), no shortcuts |
+| Social-media-originated questions for public output | 0, **0.3 critical**, 0.5, 2, 3, 5, **6 required** |
 
 **Note on news / current events:** Phase 0.3 is *especially* critical here — news headlines almost always arrive pre-framed by an editor's assumptions. Skipping Phase 0.3 means inheriting those assumptions silently.
+
+**Note on social-media-originated questions for public output:** Phase 6 (Belief Source-Trail) is *required*, not optional. Publishing a fact-check without explaining why the false belief was plausible reads as condescension and gets rejected — even when the facts are correct.
 
 ---
 
@@ -726,6 +814,7 @@ See `examples/` directory:
 - `case-political-substitution.md` — When a viral question smuggles a false Authority premise: a 2026-05-11 case that hardened Phase 0.3 from declaration-based to execution-based
 - `case-privacy-leak.md` — When methodological rigor is not the same as ethical adequacy: a 2026-05-11 PII failure in the Skill's own published examples that introduced the Privacy / PII Discipline rule into Phase 3
 - `case-skipped-ach.md` — When Phase 5 is run but ACH is silently skipped: a 2026-05-11 failure where the analyst defended only the favored hypothesis until a user reviewer surfaced a plausible alternative. Hardened Phase 5 ACH from "listed step" to "required written table."
+- `case-belief-source-trail-origin.md` — Why Phase 6 was added: factually correct verifications without an empathy layer get rejected. The complement to fact source-tracing — explaining why a false belief became plausible enough to spread, without dismissing the believer.
 
 ---
 
@@ -742,3 +831,4 @@ Distilled from a 2026-05-08 working session on epistemic humility in LLM-assiste
   - **Phase 0.3 substitution check is now execution-based, not declaration-based**: each of the four KAC steps must produce a written artifact; missing artifact halts the run. Added "Authority / Jurisdiction" as a distinct premise category. Triggered by a viral Threads post smuggling a false Authority premise that survived initial Phase 0.3 inspection. See `examples/case-political-substitution.md`.
 - **v1.3** (2026-05-11 evening) — Ethics release. The v1.2 push committed six private individuals' Threads `@handles` into the public Skill repository alongside "factually wrong" verdicts on their specific comments. The Skill author caught this on review and required a privacy discipline that should have been built in from the start. Added **Privacy / PII Discipline** as a Phase 3 sub-rule, with a two-tier rule (public figures named directly; private individuals redacted). Retroactively redacted `examples/case-political-substitution.md`. Documented the failure as `examples/case-privacy-leak.md`. The Skill author also chose to rewrite git history (force-push via `git filter-repo`) to remove the original handles from all prior commits, rather than the lower-effort forward-only repair — because the cost of leaving private individuals' identifiers in indexed historical commits is borne by them, not by the Skill author.
 - **v1.4** (2026-05-11 night) — Phase 5 hardening. During the same review of the Hualien 300 億 case that surfaced v1.3, the user pointed out that the Skill's report defended only the favored hypothesis (馬太鞍堰塞湖 300 億 special budget) without surfacing a plausible alternative (0403 震災款 285.5 億, which could be the actual referent if rounded up colloquially). Phase 5 had listed ACH (Analysis of Competing Hypotheses) as a sub-step, but the actual run had skipped it — the same "described but not executed" failure pattern that motivated Phase 0.3 hardening in v1.2. Phase 5 ACH is now a **required written table** with at least H1 + one non-trivial alternative, surfaced in the Phase 3 output rather than hidden as internal metadata. See `examples/case-skipped-ach.md`.
+- **v1.5** (2026-05-12) — **Empathy layer release.** The user observed that Phases 0–5 produce factually correct verifications but leave a gap: *why do so many people believe the wrong version?* Without addressing this, a fact-check reads as condescension — readers naturally respond "if you're right, why does everyone else believe wrong, are they all stupid?" The answer is almost always no: false beliefs spread because of *structural conditions* (knowledge gaps, narrative frames, media language, identity-based attribution, propagation pressure, cognitive load). Added **Phase 6: Belief Source-Trail** — the complement to fact source-tracing. Required output is a Structural Factor Analysis with at least 3 factors across at least 2 distinct categories, plus an explicit empathy frame stating that believing the false version was a rational near-guess under the conditions. The user's framing: *「人們的情緒跟焦慮是真實的，要先被同理，才能夠看得下溯源的證據」*. See `examples/case-belief-source-trail-origin.md`.

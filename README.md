@@ -29,13 +29,14 @@ When triggered on a factual question, the skill walks through a 6-phase verifica
 | **0.5** | Pre-register search strategy / 預先登記搜尋策略（防止事後挑詞）|
 | **1** | Scope reconnaissance / 範圍偵察（Gemini 偵察兵 or broad WebSearch）|
 | **2** | T1/T2 verification via WebFetch — with T1 Domain Gate / 抓取原始來源驗證（含 T1 域名強制規則）|
-| **3** | Disclosure output / 揭露式呈現（信心標籤 + 來源紀錄）|
+| **3** | Disclosure output / 揭露式呈現（信心標籤 + 來源紀錄 + PII discipline）|
 | **4** | Peer review / 同儕審查 |
-| **5** | Devil's advocacy — actively search counter-evidence / 敵對審查 — 主動找反證 |
+| **5** | Devil's advocacy + required ACH table / 敵對審查 + 必出競爭假說表 |
+| **6** | **Belief Source-Trail — explain why the false belief was plausible / 信念溯源 — 解釋錯誤指控為什麼自然流傳** |
 
-Phases 1, 4, 5 are conditional on stakes level. Phases 0, 0.3, 0.5, 2, 3 always run.
+Phases 1, 4, 5, 6 are conditional on stakes/context. Phases 0, 0.3, 0.5, 2, 3 always run.
 
-Phase 1、4、5 視風險等級條件執行。Phase 0、0.3、0.5、2、3 永遠執行。
+Phase 1、4、5、6 視風險等級與情境條件執行。Phase 0、0.3、0.5、2、3 永遠執行。
 
 ## The Source Tier System / 來源分級系統
 
@@ -179,6 +180,7 @@ The `examples/` directory documents the failure modes that motivated each rule:
 - **[`case-political-substitution.md`](examples/case-political-substitution.md)** — When a viral question smuggles a false Authority premise: a 2026-05-11 case (Hualien "300 億" controversy) that hardened Phase 0.3 from declaration-based to **execution-based**.
 - **[`case-privacy-leak.md`](examples/case-privacy-leak.md)** — When methodological rigor is not the same as ethical adequacy: a 2026-05-11 PII failure in the Skill's own examples that introduced the **Privacy / PII Discipline** rule into Phase 3.
 - **[`case-skipped-ach.md`](examples/case-skipped-ach.md)** — When Phase 5 is run but ACH is silently skipped: a 2026-05-11 failure that hardened Phase 5's **Analysis of Competing Hypotheses** from a listed step to a required written table with at least H1 + one non-trivial alternative.
+- **[`case-belief-source-trail-origin.md`](examples/case-belief-source-trail-origin.md)** — Why Phase 6 was added: factually correct verifications without an empathy layer get rejected. The complement to fact source-tracing — explaining why a false belief became plausible enough to spread, without dismissing the believer. "Emotions and anxieties are real; they must be empathized with before someone can read the source trail."
 
 ## Origin Story / 起源
 
