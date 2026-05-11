@@ -25,16 +25,17 @@ When triggered on a factual question, the skill walks through a 6-phase verifica
 | Phase | Action / 動作 |
 |-------|--------|
 | **0** | Trigger check — is this factual? / 觸發判斷：這是事實性問題嗎 |
+| **0.3** | Key Assumptions Check — audit the question's hidden premises before searching / 前提核查（CIA Tradecraft Primer KAC 四步法）|
 | **0.5** | Pre-register search strategy / 預先登記搜尋策略（防止事後挑詞）|
 | **1** | Scope reconnaissance / 範圍偵察（Gemini 偵察兵 or broad WebSearch）|
-| **2** | T1/T2 verification via WebFetch / 抓取原始來源驗證（必做）|
+| **2** | T1/T2 verification via WebFetch — with T1 Domain Gate / 抓取原始來源驗證（含 T1 域名強制規則）|
 | **3** | Disclosure output / 揭露式呈現（信心標籤 + 來源紀錄）|
 | **4** | Peer review / 同儕審查 |
 | **5** | Devil's advocacy — actively search counter-evidence / 敵對審查 — 主動找反證 |
 
-Phases 1, 4, 5 are conditional on stakes level. Phases 0, 0.5, 2, 3 always run.
+Phases 1, 4, 5 are conditional on stakes level. Phases 0, 0.3, 0.5, 2, 3 always run.
 
-Phase 1、4、5 視風險等級條件執行。Phase 0、0.5、2、3 永遠執行。
+Phase 1、4、5 視風險等級條件執行。Phase 0、0.3、0.5、2、3 永遠執行。
 
 ## The Source Tier System / 來源分級系統
 
@@ -173,6 +174,9 @@ The `examples/` directory documents the failure modes that motivated each rule:
 - **[`case-tsmc.md`](examples/case-tsmc.md)** — Before/after the Iron Law: same skill structure produced "please check yourself" before, vs. actually fetching T1 data after. The clearest demonstration of the skill's net value.
 - **[`case-baseball.md`](examples/case-baseball.md)** — Phase 1 Gemini scouting succeeds where solo WebSearch fails (2026 Taiwanese MLB players, otherwise missed entirely).
 - **[`case-faker.md`](examples/case-faker.md)** — Phase 4 peer review's double-edged nature: Gemini's methodological critique is valid AND fabricates its own specifics.
+- **[`case-phase-0-3-genesis.md`](examples/case-phase-0-3-genesis.md)** — Meta-case: how Source-Trail verified its own academic foundations (CIA KAC, Popper, Maxwell, Kahneman) before adding Phase 0.3 to the skill.
+- **[`case-citation-laundering.md`](examples/case-citation-laundering.md)** — When news outlets are mistakenly labelled T1: a 2026-05-11 failure during a legislative-bill comparison that introduced the **T1 Domain Gate** rule into Phase 2.
+- **[`case-political-substitution.md`](examples/case-political-substitution.md)** — When a viral question smuggles a false Authority premise: a 2026-05-11 case (Hualien "300 億" controversy) that hardened Phase 0.3 from declaration-based to **execution-based**.
 
 ## Origin Story / 起源
 

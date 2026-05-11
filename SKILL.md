@@ -1,6 +1,6 @@
 ---
 name: source-trail
-version: 1.0.0
+version: 1.2.0
 description: Use when answering factual questions involving specific numbers, dates, comparative claims (most/best/first), current states ("now", "latest", "still"), attribution (who/when/where), or any information that may have changed since training. SKIP for code logic, concept explanations, opinions, hypotheticals, creative tasks.
 license: MIT
 ---
@@ -95,13 +95,15 @@ Realistic time costs for users to set expectations:
 
 | Stakes | Phases | Typical Time |
 |--------|--------|--------------|
-| Low | 0, 0.5, 2, 3 | 20-40s |
-| Medium | + 1?, 4 | 40-60s |
-| High | All (0–5) | 60-90s with parallel; 1.5-3min sequential |
+| Low | 0, 0.3, 0.5, 2, 3 | 25-45s |
+| Medium | + 1?, 4 | 45-65s |
+| High | All (0–5) | 65-95s with parallel; 1.5-3min sequential |
+
+Phase 0.3 adds ~5s but often saves more time downstream by preventing wasted searches on a wrongly-framed question.
 
 Sequential execution can double the time. **Always parallelize independent fetches.** See parallelization rules in Phase 2 and Phase 5.
 
-For users requesting speed: they can say "fast" / "lite" / "skip Phase 5" — degrade gracefully by skipping conditional phases first (5 → 4 → 1), keeping Phase 2 + 3 as the irreducible minimum.
+For users requesting speed: they can say "fast" / "lite" / "skip Phase 5" — degrade gracefully by skipping conditional phases first (5 → 4 → 1), keeping Phase 0.3 + 2 + 3 as the irreducible minimum. **Phase 0.3 is not optional even in lite mode** — it's the cheapest way to avoid the most expensive failure.
 
 ---
 
@@ -208,6 +210,70 @@ Always note publication date of sources. A 2024 statistic answering a 2026 quest
 ### Phase 0: Trigger Check（觸發判斷）
 Is this a factual question matching the trigger criteria? If yes, continue. If no, exit skill.
 
+### Phase 0.3: Key Assumptions Check（前提核查）— from intelligence tradecraft
+
+**Before searching, audit the question itself.** A precisely-verified answer to a wrongly-framed question is still wrong. This phase adapts the CIA's Key Assumptions Check (Tradecraft Primer 2009, pp.7-8) — originally designed for intelligence analysts to surface hidden premises before analysis begins.
+
+#### When to run
+
+- **Always run** for any question that survives Phase 0 trigger check
+- **Especially critical** when the question comes from a third party (news headline, user quoting someone else, social-media post) — these arrive pre-framed by someone else's assumptions
+
+#### The four-step procedure（CIA KAC 四步法）
+
+This is an **execution checklist, not a declaration**. Each step must produce a written artifact that goes into the verification trail. If a step has no written output, that step did not happen.
+
+1. **Restate the analytic line**（寫下目前的分析路線）
+   *Action:* Write, in one sentence, what the question seems to be asking.
+   *Output artifact:* `"The question appears to be: ___"`
+
+2. **List all premises, stated and unstated**（列出所有前提，含未明說的）
+   *Action:* Run through the checklist below. For each row, **write the specific premise the current question carries**, even if blank.
+
+   | Premise type | Question to ask | Anchor tradition |
+   |---|---|---|
+   | **Existence / Falsifiability** | Is the "fact" being asked about even verifiable in principle? Does it even exist as a single thing? | Popper, *Logic of Scientific Discovery* (1934) |
+   | **Actor / Object unit** | Who/what is the subject? Is the unit of analysis specified? | (general analytic clarity) |
+   | **Authority / Jurisdiction** | Who has the legal/institutional power to do the thing being asked about? Often confused with Actor. | (added 2026-05-11 — see `case-political-substitution.md`) |
+   | **Time anchor** | What time point does "now/recent/current" refer to? | (general analytic clarity) |
+   | **Metric / Measurement** | By what indicator is the comparative claim measured? | (general analytic clarity) |
+   | **Embedded stance** | Does the question presuppose its own answer? | Maxwell, *Qualitative Research Design* (3ed) — "Pay attention to your assumptions and be sure to not include them in the questions" |
+   | **Question substitution** | Am I about to answer an easier question instead of the hard one? | Kahneman & Frederick, "Representativeness Revisited" (Cambridge *Heuristics and Biases*, Ch.2) |
+
+   *Output artifact:* A written premise list, one line per row that has a premise to flag.
+
+3. **Challenge each premise**（挑戰每個前提）
+   *Action:* For each premise, answer in writing: Why must this be true? Under what conditions would it fail?
+   *Output artifact:* A written challenge note per premise, even short (one line is fine).
+
+4. **Reframe if needed**（必要時重新框定問題）
+   *Action:* If any premise is shaky and the answer depends on it → either (a) verify the premise itself in Phase 2, or (b) rewrite the question to make the premise explicit.
+   *Output artifact:* If reframed, **write out the new question verbatim** so the user can see the change in Phase 3 output.
+
+**Hard requirement:** If any of the four written artifacts is missing, Phase 0.3 is incomplete and the run halts. Going to Phase 0.5 / Phase 2 without these artifacts means substitution was *declared* not *checked* — exactly the failure mode this Phase exists to prevent.
+
+**Case study:** See `examples/case-political-substitution.md` — a 2026-05-11 case where a viral Threads post smuggled a false Authority premise ("the Hualien magistrate controls a 300-billion budget" — actually a central-government special budget) into a popular accusation. Phase 0.3's premise audit caught the substitution before Phase 2 began.
+
+#### Output
+
+Phase 0.3 produces an **internal artifact**: the original question + the reframed question (if reframed). This artifact is **shown to the user** in the final output (Phase 3) under "我把問題改成這樣問" / "Question reframing" — because exposing the reframing is itself part of the methodology's pedagogical value.
+
+#### Why this Phase exists
+
+Phase 0.5 (Pre-registration) prevents motivated search-term selection. But Phase 0.5 assumes the **question itself is well-formed**. If the question smuggles in a false premise, no amount of rigorous searching will produce a true answer — you'll get a precise answer to the wrong question.
+
+This is Kahneman's *attribute substitution* applied to LLMs: when handed a hard question, the system tends to silently substitute an easier related one (e.g., "Is X policy good?" → "What do articles I can find say about X policy?"). Phase 0.3 forces conscious detection.
+
+#### Lineage
+
+This Phase synthesizes:
+- **Structure**: CIA Tradecraft Primer's Key Assumptions Check (four-step procedure)
+- **Falsifiability premise**: Popper
+- **Stance-detection premise**: Maxwell qualitative methodology
+- **Substitution-detection premise**: Kahneman & Frederick
+
+Each row in the checklist traces to a specific T1/T2 academic source. This is documented in `examples/case-phase-0-3-genesis.md`.
+
 ### Phase 0.5: Pre-registration（預先登記）— from research ethics
 
 **Before searching**, briefly state:
@@ -246,11 +312,34 @@ For each factual claim, fetch the T1/T2 source directly. Do not synthesize from 
 - Cross-reference at least 2 **independent** sources for high-stakes claims
 - Apply Citation Chain Integrity, Wire Service Detection, Time Context Decay rules
 
+#### T1 Domain Gate — REQUIRED before labelling any source T1（強制 T1 域名規則）
+
+Before any source can carry a T1 label in the final output, its domain must match the appropriate category below. If it does not match, the source is **T2 at best**, and the citation chain must be traced upstream to a real T1 document before Phase 2 is considered complete.
+
+| Domain category | Acceptable T1 patterns | Examples |
+|---|---|---|
+| **Government / legislative** | `*.gov.tw`, `ppg.ly.gov.tw`, `lis.ly.gov.tw`, `law.moj.gov.tw`, official ministry/agency domains | Executive Yuan press, legislative bill PDFs, official statute database |
+| **Statistical** | Original databases on government statistical agency domains | `dgbas.gov.tw`, `stat.gov.tw`, `nhi.gov.tw` raw data |
+| **Academic / peer-reviewed** | Journal DOI pages, university research output (not campus newsroom) | `doi.org/*`, `*.edu` primary research pages |
+| **Corporate** | The named company's own investor-relations / press domain — for that company's *own* claims only | TSMC investor relations for TSMC revenue |
+| **International official** | Multilateral organisation primary documents | `un.org`, `who.int`, `worldbank.org` raw reports |
+
+**News outlets are T2 at best, even when they appear authoritative.** This includes:
+- Wire services: `cna.com.tw` (中央社), `reuters.com`, `ap.org`
+- Public broadcasters: `pts.org.tw` (公視), `bbc.com`
+- Newspapers / magazines: `udn.com`, `ltn.com.tw`, `chinatimes.com`, `storm.mg`, `newtalk.tw`, `nytimes.com`, `economist.com`
+
+When a news article cites a primary document (e.g., a court ruling, a legislative bill, a corporate filing), Phase 2 must **follow the citation chain back to that primary document** before finalizing. If the upstream T1 cannot be located, the news source can be cited but **must be tier-labelled T2** in the verification output.
+
+**Audit step before output:** Re-read every "T1" label in your draft. For each one, ask: "Does this URL's domain appear in the table above?" If no, downgrade or chase the upstream document.
+
 **⚡ Parallelization rule:** When fetching multiple independent sources (different candidates, different domains, different aspects), issue all WebFetch / WebSearch calls **in parallel** in a single tool-use batch. Sequential execution wastes wall-clock time for no benefit. Only serialize when one fetch's result determines the next fetch's URL.
 
 Example: Verifying 4 baseball players → 4 parallel WebFetch calls, not 4 sequential.
 
 **The Iron Law applies here**: if the question requires data past your training cutoff, you MUST execute the search, not defer to the user.
+
+**Case study:** See `examples/case-citation-laundering.md` — a 2026-05-11 failure where `udn.com` was mistakenly labelled T1, leading to five factual errors in a legislative bill comparison. The T1 Domain Gate was introduced specifically to prevent this recurrence.
 
 ### Phase 3: Disclosure Output（揭露式呈現）
 
@@ -260,12 +349,25 @@ Order content by **user importance**, not by phase order:
 
 ```
 1. Conclusion / TL;DR             ← 2-3 sentence direct answer
-2. Main content                    ← Structured details
-3. Caveats / risks (if applicable) ← Real warnings only
-4. Blind spots / additions         ← What might be missed
+2. (If question was reframed)     ← "我把問題改成這樣問" — show original vs reframed
+3. Main content                    ← Structured details
+4. Caveats / risks (if applicable) ← Real warnings only
+5. Blind spots / additions         ← What might be missed
 ———— horizontal rule ————
-5. Verification details            ← Sources / falsifiability / reproducibility
+6. Verification details            ← Sources / falsifiability / reproducibility
 ```
+
+**Question reframing block (when applicable):**
+
+If Phase 0.3 reframed the question, surface this near the top of the output. The reframing is itself part of the answer — it teaches the reader to detect smuggled premises. Format:
+
+```
+原本問題：[user's original phrasing or news headline]
+重新框定為：[the reframed, premise-explicit version]
+為什麼：[which premise was shaky and how the rewrite makes it explicit]
+```
+
+If the original question already had clean premises, omit this block (don't perform reframing as decoration).
 
 #### Confidence Labels — Default to Verified, Label Exceptions Only
 
@@ -465,7 +567,7 @@ Note: verified facts presented as flowing prose without labels. Only the **non-v
 
 ## Phase Selection Decision Tree
 
-Use this to decide which phases to run. Phase 0, 0.5, 2, 3 always run. Others depend on stakes and scope.
+Use this to decide which phases to run. Phase 0, 0.3, 0.5, 2, 3 always run. Others depend on stakes and scope.
 
 ```
 Question received
@@ -478,6 +580,11 @@ Question received
 [Pre-flight Announcement]
    └─ Low/Medium → announce + execute
    └─ High       → announce + WAIT for user confirmation
+       ↓
+[Phase 0.3] Key Assumptions Check (always)
+   - List premises (existence, actor, time, metric, stance, substitution)
+   - Challenge each
+   - Reframe question if a premise is shaky
        ↓
 [Phase 0.5] Pre-register strategy (always)
        ↓
@@ -507,12 +614,14 @@ Final answer
 
 | Question Type | Phases to Run |
 |---------------|---------------|
-| Pure factual lookup (Low stakes) | 0, 0.5, 1?, 2, 3 |
-| Comparative / evaluative (Medium) | 0, 0.5, 1?, 2, 3, 4 |
+| Pure factual lookup (Low stakes) | 0, 0.3, 0.5, 1?, 2, 3 |
+| Comparative / evaluative (Medium) | 0, 0.3, 0.5, 1?, 2, 3, 4 |
 | Decision support / harm if wrong (High) | All phases (0–5) |
-| News / current events | 0, 0.5, 1?, 2, 3, +5 if politicized |
-| Technical specs / docs | 0, 0.5, 2, 3 |
+| News / current events | 0, **0.3 critical**, 0.5, 1?, 2, 3, +5 if politicized |
+| Technical specs / docs | 0, 0.3, 0.5, 2, 3 |
 | Medical / financial / legal | All phases (0–5), no shortcuts |
+
+**Note on news / current events:** Phase 0.3 is *especially* critical here — news headlines almost always arrive pre-framed by an editor's assumptions. Skipping Phase 0.3 means inheriting those assumptions silently.
 
 ---
 
@@ -552,9 +661,20 @@ See `examples/` directory:
 - `case-baseball.md` — Phase 1 Gemini scouting succeeds where solo WebSearch fails (2026 Taiwanese MLB players)
 - `case-tsmc.md` — Phase 1 skipped when T1 source is obvious (TSMC quarterly revenue)
 - `case-faker.md` — Phase 4 peer review's double-edged nature (Gemini's critique contains hallucinations to filter)
+- `case-phase-0-3-genesis.md` — How Phase 0.3 was added to the skill: the meta-case of using Source-Trail to verify Source-Trail's own academic foundations (CIA KAC, Popper, Maxwell, Kahneman)
+- `case-citation-laundering.md` — When news outlets are mistakenly labelled T1: a 2026-05-11 failure that introduced the T1 Domain Gate rule into Phase 2
+- `case-political-substitution.md` — When a viral question smuggles a false Authority premise: a 2026-05-11 case that hardened Phase 0.3 from declaration-based to execution-based
 
 ---
 
 ## Origin
 
 Distilled from a 2026-05-08 working session on epistemic humility in LLM-assisted research. Each rule traces to a documented failure mode caught during testing. See `examples/` for the original cases.
+
+### Version history
+
+- **v1.0** (2026-05-08) — Initial release. Phases 0, 0.5, 1, 2, 3, 4, 5. Origin from baseball/Faker/TSMC failure cases.
+- **v1.1** (2026-05-11 AM) — Added Phase 0.3 (Key Assumptions Check). Triggered by recognizing that Phase 0.5 (pre-registration) assumes the question is already well-formed; if the question smuggles a false premise, no rigorous searching produces a true answer. Adapted from CIA Tradecraft Primer's KAC procedure. See `examples/case-phase-0-3-genesis.md`.
+- **v1.2** (2026-05-11 PM) — Hardening release in response to two same-day failures during real-world testing:
+  - **Added T1 Domain Gate** to Phase 2: a source cannot be labelled T1 unless its domain matches an explicit whitelist; news outlets are T2 at best regardless of authority. Triggered by mis-labelling `udn.com` as T1 in a legislative-bill comparison, which led to five factual errors. See `examples/case-citation-laundering.md`.
+  - **Phase 0.3 substitution check is now execution-based, not declaration-based**: each of the four KAC steps must produce a written artifact; missing artifact halts the run. Added "Authority / Jurisdiction" as a distinct premise category. Triggered by a viral Threads post smuggling a false Authority premise that survived initial Phase 0.3 inspection. See `examples/case-political-substitution.md`.
