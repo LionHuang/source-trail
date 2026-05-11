@@ -13,7 +13,7 @@ While documenting `case-political-substitution.md` for the Skill's public `examp
 - The author of a separate volunteer-mobilization post being criticized
 - Four individual commenters whose specific claims were quoted and judged "factually wrong"
 
-The first commit to the public Skill repository (`6a573f8`, pushed to `github.com/LionHuang/source-trail`) made these handles part of a permanent, searchable, public methodology document.
+The v1.2 commit, pushed to `github.com/LionHuang/source-trail`, briefly made these handles part of a permanent, searchable, public methodology document — until the leak was caught and remediated.
 
 The user — Lion, the Skill author — caught this on review, with the diagnosis:
 
@@ -71,12 +71,14 @@ A new sub-rule under Phase 3 Disclosure Output: **Privacy / PII Discipline**. Se
 
 ### Git history
 
-The commit containing the original PII (`6a573f8`) is still in `main`'s history at the time of writing. Two options exist:
+After the v1.2 push that introduced the leak, two repair options were available:
 
-1. **Forward-only repair (default):** redact on `main`, leave history alone. The PII remains visible to anyone who runs `git log -p` or browses the file's history on GitHub, but the current state of `main` (and search-engine indexes of it) no longer contains the handles. Indexed third-party caches will gradually drop the old version.
-2. **History rewrite (force-push):** use `git filter-repo` or BFG to strip the handles from every prior commit, then `git push --force`. This is destructive to anyone who has cloned or forked, but provides cleaner removal.
+1. **Forward-only repair:** redact on `main`, leave history alone. PII would remain visible to anyone running `git log -p` or browsing file history on GitHub, but the current `main` state and future indexes would be clean.
+2. **History rewrite (force-push):** use `git filter-repo` to strip the handles from every prior commit, then `git push --force`. Destructive to anyone who had cloned or forked, but cleaner removal.
 
-Force-push is reserved for explicit user direction. As of this case's writing, the user has not yet decided. The case will be updated when that decision is made.
+The Skill author chose **option 2 (history rewrite)** on the grounds that "this concerns other people's personal information, and the cost of treating it lightly is not ours to absorb." The handles were removed from every commit in the repository's history before search-engine indexers had time to fully fetch the v1.2 state. The resulting commit hashes for the v1.2 release and earlier no longer match what was originally pushed.
+
+This is the right ordering of priorities for a Skill whose entire premise is accountable claim-making.
 
 ---
 
