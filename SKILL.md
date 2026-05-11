@@ -1,6 +1,6 @@
 ---
 name: source-trail
-version: 1.3.0
+version: 1.4.0
 description: Use when answering factual questions involving specific numbers, dates, comparative claims (most/best/first), current states ("now", "latest", "still"), attribution (who/when/where), or any information that may have changed since training. SKIP for code logic, concept explanations, opinions, hypotheticals, creative tasks.
 license: MIT
 ---
@@ -493,12 +493,31 @@ Phase 5 turns the falsifiability statement into an investigation.
 - Answer space is closed and well-bounded (e.g., "list of currently active X")
 - The Falsifiability statement in Phase 3 has no plausible trigger conditions worth searching
 
-**Execution:**
+**Execution — each step must produce a written artifact, not a self-described "consideration":**
+
 1. **Find counter-evidence**: What evidence would disprove this conclusion? Search for it actively.
-2. **List competing hypotheses (ACH)**: Beyond my answer, what other explanations fit the evidence?
+   *Required artifact:* a written summary of what was searched and what was found / not found.
+
+2. **List competing hypotheses (ACH) — REQUIRED WRITTEN TABLE**
+
+   Phase 5 cannot complete without producing an ACH table containing at least 2 hypotheses. The table format:
+
+   | Hypothesis | Description | Evidence for | Evidence against | Confidence |
+   |---|---|---|---|---|
+   | H1 | [the primary answer] | [...] | [...] | [%] |
+   | H2 | [the strongest plausible alternative] | [...] | [...] | [%] |
+   | H3+ | [further alternatives, if any] | [...] | [...] | [%] |
+
+   *Hard requirement:* the table must contain **H1 + at least one non-trivial alternative**. If no plausible alternative exists after honest search, the table must explicitly state: *"No alternative hypothesis with non-trivial fit to the evidence was found"* — making the absence a deliberate finding, not an oversight.
+
+   *Why this is mandatory:* without a written ACH, the analyst's preferred hypothesis becomes the *only* hypothesis defended in the output. The reader cannot tell whether alternatives were considered or silently skipped. See `examples/case-skipped-ach.md` for the 2026-05-11 failure that motivated this hardening.
+
 3. **Indicators & Warnings**: Where am I structurally most likely to be wrong for this question type? (Sports? Stats lag. Tech? Versions shift. Politics? Wire bias.)
+   *Required artifact:* a written one-line note per question-type category that applies.
 
 **⚡ Parallelization rule:** Counter-evidence searches across different angles are independent — issue all in parallel.
+
+**Output surfacing:** when Phase 5 runs, the ACH table must surface in the Phase 3 disclosure output (visible to the user, not hidden as internal metadata). A report that shows only the favored hypothesis invites the reader's natural question "what else might this be?" — which is the very question Phase 5 exists to answer in advance.
 
 This is more proactive than Phase 4 — it doesn't wait for an external reviewer.
 
@@ -706,6 +725,7 @@ See `examples/` directory:
 - `case-citation-laundering.md` — When news outlets are mistakenly labelled T1: a 2026-05-11 failure that introduced the T1 Domain Gate rule into Phase 2
 - `case-political-substitution.md` — When a viral question smuggles a false Authority premise: a 2026-05-11 case that hardened Phase 0.3 from declaration-based to execution-based
 - `case-privacy-leak.md` — When methodological rigor is not the same as ethical adequacy: a 2026-05-11 PII failure in the Skill's own published examples that introduced the Privacy / PII Discipline rule into Phase 3
+- `case-skipped-ach.md` — When Phase 5 is run but ACH is silently skipped: a 2026-05-11 failure where the analyst defended only the favored hypothesis until a user reviewer surfaced a plausible alternative. Hardened Phase 5 ACH from "listed step" to "required written table."
 
 ---
 
@@ -721,3 +741,4 @@ Distilled from a 2026-05-08 working session on epistemic humility in LLM-assiste
   - **Added T1 Domain Gate** to Phase 2: a source cannot be labelled T1 unless its domain matches an explicit whitelist; news outlets are T2 at best regardless of authority. Triggered by mis-labelling `udn.com` as T1 in a legislative-bill comparison, which led to five factual errors. See `examples/case-citation-laundering.md`.
   - **Phase 0.3 substitution check is now execution-based, not declaration-based**: each of the four KAC steps must produce a written artifact; missing artifact halts the run. Added "Authority / Jurisdiction" as a distinct premise category. Triggered by a viral Threads post smuggling a false Authority premise that survived initial Phase 0.3 inspection. See `examples/case-political-substitution.md`.
 - **v1.3** (2026-05-11 evening) — Ethics release. The v1.2 push committed six private individuals' Threads `@handles` into the public Skill repository alongside "factually wrong" verdicts on their specific comments. The Skill author caught this on review and required a privacy discipline that should have been built in from the start. Added **Privacy / PII Discipline** as a Phase 3 sub-rule, with a two-tier rule (public figures named directly; private individuals redacted). Retroactively redacted `examples/case-political-substitution.md`. Documented the failure as `examples/case-privacy-leak.md`. The Skill author also chose to rewrite git history (force-push via `git filter-repo`) to remove the original handles from all prior commits, rather than the lower-effort forward-only repair — because the cost of leaving private individuals' identifiers in indexed historical commits is borne by them, not by the Skill author.
+- **v1.4** (2026-05-11 night) — Phase 5 hardening. During the same review of the Hualien 300 億 case that surfaced v1.3, the user pointed out that the Skill's report defended only the favored hypothesis (馬太鞍堰塞湖 300 億 special budget) without surfacing a plausible alternative (0403 震災款 285.5 億, which could be the actual referent if rounded up colloquially). Phase 5 had listed ACH (Analysis of Competing Hypotheses) as a sub-step, but the actual run had skipped it — the same "described but not executed" failure pattern that motivated Phase 0.3 hardening in v1.2. Phase 5 ACH is now a **required written table** with at least H1 + one non-trivial alternative, surfaced in the Phase 3 output rather than hidden as internal metadata. See `examples/case-skipped-ach.md`.
