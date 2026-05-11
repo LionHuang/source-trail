@@ -1,6 +1,6 @@
 ---
 name: source-trail
-version: 1.5.0
+version: 1.5.1
 description: Use when answering factual questions involving specific numbers, dates, comparative claims (most/best/first), current states ("now", "latest", "still"), attribution (who/when/where), or any information that may have changed since training. SKIP for code logic, concept explanations, opinions, hypotheticals, creative tasks.
 license: MIT
 ---
@@ -581,6 +581,33 @@ Produce a **Structural Factor Analysis** table. The table must satisfy these con
 - **Veiled contempt:** "People can't tell the difference between special budget and county budget." Rephrase as a structural condition, not a personal deficit.
 - **Both-sidesing as an escape:** Phase 6 is structural analysis, not a "both sides have a point" hedge. Be specific about which conditions are doing the work.
 - **Politicizing the analysis:** If the structural factors mostly favor one political reading, the analyst is bringing their own framing. Stress-test by trying to write the same factors with the political valence reversed.
+- **Defensive scope-clarification disguised as both-sidesing:** When the verified conclusion happens to be politically convenient for one side, do not write a closing paragraph like "but [the favored side] can still be examined in many other ways" with a list of unverified angles. Even if each listed angle is specific, the *function* of the paragraph is to perform political symmetry through implied accusation — exactly what Phase 6 must avoid. The correct form is a neutral **Scope Statement**: "Verified: [what]. Not in scope: [what other questions exist, without implying their truth status]. Do not infer the status of out-of-scope questions from this verification." See the *Scope Statement format* below.
+
+#### Scope Statement format — when the verification is politically asymmetric
+
+When a verified conclusion lands on one side of a political divide (e.g., "this specific accusation against politician X is factually wrong"), the analyst will feel a pull to compensate. Resist it. The correct discipline is:
+
+```
+本次查證的範圍（Scope Statement）
+
+已驗證：
+- [the specific factual question that was answered]
+- [the conclusion]
+
+本次未涵蓋的問題（不在本次 Source-Trail 範圍）：
+- [other plausible questions about the same actors/topic — listed
+  NEUTRALLY as research questions, with NO implication of their
+  factual status]
+
+請勿從本次查證推論任何未涵蓋問題的事實狀態。未涵蓋 ≠ 已驗證 /
+已否證 / 結論為何。每一個未涵蓋問題若要驗證，需要另外跑一次
+Source-Trail。
+```
+
+Key distinctions:
+- "Not in scope" ≠ "could be examined" — the former is neutral research-design language; the latter implies the analyst is curating *which* unverified accusations the reader should remember
+- No "this is not exoneration" / "not endorsing anyone" hedge — if the verification was done correctly, this disclaimer is unnecessary. Including it reveals analyst anxiety about being misread, and that anxiety telegraphs to the reader.
+- Explicit warning: "Do not infer the status of out-of-scope questions from this verification" — this is the academic-paper standard for limitations sections.
 
 #### Disclosure surfacing
 
@@ -832,3 +859,4 @@ Distilled from a 2026-05-08 working session on epistemic humility in LLM-assiste
 - **v1.3** (2026-05-11 evening) — Ethics release. The v1.2 push committed six private individuals' Threads `@handles` into the public Skill repository alongside "factually wrong" verdicts on their specific comments. The Skill author caught this on review and required a privacy discipline that should have been built in from the start. Added **Privacy / PII Discipline** as a Phase 3 sub-rule, with a two-tier rule (public figures named directly; private individuals redacted). Retroactively redacted `examples/case-political-substitution.md`. Documented the failure as `examples/case-privacy-leak.md`. The Skill author also chose to rewrite git history (force-push via `git filter-repo`) to remove the original handles from all prior commits, rather than the lower-effort forward-only repair — because the cost of leaving private individuals' identifiers in indexed historical commits is borne by them, not by the Skill author.
 - **v1.4** (2026-05-11 night) — Phase 5 hardening. During the same review of the Hualien 300 億 case that surfaced v1.3, the user pointed out that the Skill's report defended only the favored hypothesis (馬太鞍堰塞湖 300 億 special budget) without surfacing a plausible alternative (0403 震災款 285.5 億, which could be the actual referent if rounded up colloquially). Phase 5 had listed ACH (Analysis of Competing Hypotheses) as a sub-step, but the actual run had skipped it — the same "described but not executed" failure pattern that motivated Phase 0.3 hardening in v1.2. Phase 5 ACH is now a **required written table** with at least H1 + one non-trivial alternative, surfaced in the Phase 3 output rather than hidden as internal metadata. See `examples/case-skipped-ach.md`.
 - **v1.5** (2026-05-12) — **Empathy layer release.** The user observed that Phases 0–5 produce factually correct verifications but leave a gap: *why do so many people believe the wrong version?* Without addressing this, a fact-check reads as condescension — readers naturally respond "if you're right, why does everyone else believe wrong, are they all stupid?" The answer is almost always no: false beliefs spread because of *structural conditions* (knowledge gaps, narrative frames, media language, identity-based attribution, propagation pressure, cognitive load). Added **Phase 6: Belief Source-Trail** — the complement to fact source-tracing. Required output is a Structural Factor Analysis with at least 3 factors across at least 2 distinct categories, plus an explicit empathy frame stating that believing the false version was a rational near-guess under the conditions. The user's framing: *「人們的情緒跟焦慮是真實的，要先被同理，才能夠看得下溯源的證據」*. See `examples/case-belief-source-trail-origin.md`.
+- **v1.5.1** (2026-05-12) — Same-day patch. The user reviewed `cases/001-hualien-300-billion.md` and flagged that the closing paragraph ("but [the politician] can still be examined in many other ways: [list of unverified angles]") read as both-sidesing — defensive scope-clarification disguised as political symmetry. Even though each listed angle was specific, the function of the paragraph was to perform balance through implied accusation, which is exactly the failure mode Phase 6 is supposed to prevent. Added **anti-pattern #5: Defensive scope-clarification disguised as both-sidesing** and a required **Scope Statement format** that uses neutral inclusion/exclusion language without implying the truth status of out-of-scope questions. Drawn from academic limitations-section conventions and Boykoff & Boykoff's (2004) false-balance analysis.
