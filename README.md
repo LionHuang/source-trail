@@ -177,6 +177,7 @@ The `examples/` directory documents the failure modes that motivated each rule:
 - **[`case-phase-0-3-genesis.md`](examples/case-phase-0-3-genesis.md)** — Meta-case: how Source-Trail verified its own academic foundations (CIA KAC, Popper, Maxwell, Kahneman) before adding Phase 0.3 to the skill.
 - **[`case-citation-laundering.md`](examples/case-citation-laundering.md)** — When news outlets are mistakenly labelled T1: a 2026-05-11 failure during a legislative-bill comparison that introduced the **T1 Domain Gate** rule into Phase 2.
 - **[`case-political-substitution.md`](examples/case-political-substitution.md)** — When a viral question smuggles a false Authority premise: a 2026-05-11 case (Hualien "300 億" controversy) that hardened Phase 0.3 from declaration-based to **execution-based**.
+- **[`case-privacy-leak.md`](examples/case-privacy-leak.md)** — When methodological rigor is not the same as ethical adequacy: a 2026-05-11 PII failure in the Skill's own examples that introduced the **Privacy / PII Discipline** rule into Phase 3.
 
 ## Origin Story / 起源
 

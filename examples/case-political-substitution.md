@@ -8,12 +8,14 @@
 
 ## Context
 
-A user asked me to verify a viral Threads post (`[handle-redacted]`, 2026-05-11) accusing 「國王夫妻」(Fu Kun-chi / Hsu Chen-wei, husband-and-wife political dynasty governing Hualien) of misappropriating "300 億" of public funds. The post was framed as a critique of a volunteer mobilization effort (`[handle-redacted]`) for the Matai'an Creek flood cleanup.
+A user asked me to verify a viral Threads post (2026-05-11) accusing 「國王夫妻」(Fu Kun-chi / Hsu Chen-wei, husband-and-wife political dynasty governing Hualien) of misappropriating "300 億" of public funds. The post framed itself as a critique of a separate volunteer mobilization post calling for shovel-volunteer help in the Matai'an Creek flood cleanup.
 
-By the time I read the post, the framing had been repeated dozens of times in the comment section as accepted fact:
-- "拿了 300 億，結果沒有 1 元幫助到花蓮人" (`[handle-redacted]`)
-- "沒人敢去質疑那 300 億的去向" (`[handle-redacted]`)
-- "三百億不去追討" (`[handle-redacted]`)
+By the time I read the post, the framing had been repeated dozens of times in the comment section as accepted fact, including claims like:
+- "拿了 300 億，結果沒有 1 元幫助到花蓮人"
+- "沒人敢去質疑那 300 億的去向"
+- "三百億不去追討"
+
+(Individual commenter handles redacted — this case study describes a class of failure, not specific people. See `case-privacy-leak.md` for the rule that produced this redaction.)
 
 The user explicitly chose 「做法一」(verify the post's claims against T1 sources), which made the substitution risk explicit before search began.
 
@@ -75,9 +77,9 @@ This is a **central-government special budget**, executed by:
 | Claim | T1 Verdict |
 |---|---|
 | 「國王夫妻把 300 億花到哪裡去了？」 | ⚠ Premise error: the money is not in their hands |
-| 「沒有 1 元幫助到花蓮人」 (`[handle-redacted]`) | ⚠ Factually wrong: budget was passed 2025-12-02 and is in execution; recipients confirmed |
-| 「沒人敢去質疑那 300 億的去向」 (`[handle-redacted]`) | ⚠ Factually wrong: the budget book is public, line items are itemized, legislators reviewed it |
-| 「還有 0403 的賑災款，不知道那些房子修好沒」 (`[handle-redacted]`) | ✓ Reasonable question; this is a separate envelope (285.5 億, 2024-05-02) with partial T1 progress reports |
+| 「沒有 1 元幫助到花蓮人」 (commenter) | ⚠ Factually wrong: budget was passed 2025-12-02 and is in execution; recipients confirmed |
+| 「沒人敢去質疑那 300 億的去向」 (commenter) | ⚠ Factually wrong: the budget book is public, line items are itemized, legislators reviewed it |
+| 「還有 0403 的賑災款，不知道那些房子修好沒」 (commenter) | ✓ Reasonable question; this is a separate envelope (285.5 億, 2024-05-02) with partial T1 progress reports |
 
 ---
 

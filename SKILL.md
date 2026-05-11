@@ -1,6 +1,6 @@
 ---
 name: source-trail
-version: 1.2.0
+version: 1.3.0
 description: Use when answering factual questions involving specific numbers, dates, comparative claims (most/best/first), current states ("now", "latest", "still"), attribution (who/when/where), or any information that may have changed since training. SKIP for code logic, concept explanations, opinions, hypotheticals, creative tasks.
 license: MIT
 ---
@@ -415,6 +415,47 @@ This pushes metadata below the fold visually, while keeping it accessible for us
 
 The Falsifiability statement is the **passive** description ("If X were true, my answer would be wrong"). Phase 5 (when triggered) **actively searches** for whether X is in fact true. Phase 5 turns the falsifiability statement into investigation results.
 
+#### Privacy / PII Discipline — REQUIRED before publishing or sharing output
+
+Source-Trail produces analyses that are intentionally shareable: case files, examples directories, social-media posts, GitHub repositories. Before any verification output is committed to a publicly-discoverable surface, run this gate.
+
+##### The two-tier rule
+
+| Speaker category | Treatment |
+|---|---|
+| **Public figures speaking in public-conduct roles** — elected officials, government spokespeople, party caucuses, union representatives, named institutional actors, journalists writing under byline | **Name directly.** Their public statements about their public conduct are open to scrutiny by name. |
+| **Private individuals speaking in personal capacity** — pseudonymous social-media handles, comment-section authors, individual users of any platform, named individuals who are not public figures | **Redact identity.** Quote the claim, describe the role (「一則留言」「該貼文作者」「a commenter」), but never surface the handle, real name, profile URL, or other identifier. |
+
+##### When in doubt, redact
+
+The cost of over-redaction is small (slightly less colorful case studies). The cost of over-naming is borne by someone other than the Skill author and is permanent once indexed. Default to redaction.
+
+##### What counts as identifying information
+
+- `@handles` on social platforms (Threads, X, Instagram, etc.)
+- Real names of non-public individuals
+- Direct URLs to individual posts or profiles
+- Workplace + role + city combinations that practically identify someone
+- Distinctive paraphrases that would be searchable back to the individual
+
+##### When the claim is part of the analysis
+
+If the goal is to analyze a *class* of incorrect claim (e.g., "social-media commenters often conflate central and local government budgets"), describe the class and quote one representative claim *without attribution*. Methodology lessons survive redaction; only the name is removed.
+
+##### Public-platform availability is not a license
+
+A Threads post or X reply being publicly viewable does not authorize lifting that speech into a permanent indexed methodology document attached to a verdict. Contextual integrity (Nissenbaum 2004) — the appropriateness of information flow relative to its original context — applies even to nominally public speech.
+
+##### Audit step before commit / push
+
+Before `git commit` or any publish action on output that will become discoverable:
+
+1. Search the draft for `@`, real-name patterns (e.g. CJK personal-name conventions), and platform-specific identifiers
+2. For each hit, ask: is this person a public figure speaking in a public-conduct role *as it relates to this claim*?
+3. If yes — keep. If no — redact and replace with a role description.
+
+**Case study:** See `examples/case-privacy-leak.md` — a 2026-05-11 failure where six private individuals' Threads handles were committed to the public Skill repository alongside verdicts of "factually wrong" on their comments. The Privacy / PII Discipline was added to Phase 3 in direct response.
+
 ### Phase 4: Peer Review（同儕審查）— conditional
 
 **Run when:**
@@ -664,6 +705,7 @@ See `examples/` directory:
 - `case-phase-0-3-genesis.md` — How Phase 0.3 was added to the skill: the meta-case of using Source-Trail to verify Source-Trail's own academic foundations (CIA KAC, Popper, Maxwell, Kahneman)
 - `case-citation-laundering.md` — When news outlets are mistakenly labelled T1: a 2026-05-11 failure that introduced the T1 Domain Gate rule into Phase 2
 - `case-political-substitution.md` — When a viral question smuggles a false Authority premise: a 2026-05-11 case that hardened Phase 0.3 from declaration-based to execution-based
+- `case-privacy-leak.md` — When methodological rigor is not the same as ethical adequacy: a 2026-05-11 PII failure in the Skill's own published examples that introduced the Privacy / PII Discipline rule into Phase 3
 
 ---
 
@@ -678,3 +720,4 @@ Distilled from a 2026-05-08 working session on epistemic humility in LLM-assiste
 - **v1.2** (2026-05-11 PM) — Hardening release in response to two same-day failures during real-world testing:
   - **Added T1 Domain Gate** to Phase 2: a source cannot be labelled T1 unless its domain matches an explicit whitelist; news outlets are T2 at best regardless of authority. Triggered by mis-labelling `udn.com` as T1 in a legislative-bill comparison, which led to five factual errors. See `examples/case-citation-laundering.md`.
   - **Phase 0.3 substitution check is now execution-based, not declaration-based**: each of the four KAC steps must produce a written artifact; missing artifact halts the run. Added "Authority / Jurisdiction" as a distinct premise category. Triggered by a viral Threads post smuggling a false Authority premise that survived initial Phase 0.3 inspection. See `examples/case-political-substitution.md`.
+- **v1.3** (2026-05-11 evening) — Ethics release. The v1.2 push committed six private individuals' Threads `@handles` into the public Skill repository alongside "factually wrong" verdicts on their specific comments. The Skill author caught this on review and required a privacy discipline that should have been built in from the start. Added **Privacy / PII Discipline** as a Phase 3 sub-rule, with a two-tier rule (public figures named directly; private individuals redacted). Retroactively redacted `examples/case-political-substitution.md`. Documented the failure as `examples/case-privacy-leak.md`. The git history of the v1.2 push still contains the original handles; whether to rewrite history via force-push is a deliberate user decision pending at the time of release.
